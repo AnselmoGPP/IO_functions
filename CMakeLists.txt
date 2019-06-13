@@ -1,0 +1,7 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+PROJECT(IO_functions)
+
+ADD_EXECUTABLE(${PROJECT_NAME}
+	src/tests.cpp
+	src/myClass.h
+)
