@@ -19,45 +19,42 @@
 // Declarations ---------------------------------------------------------------
 
 // Given a string (text), extract all the substrings that exist between certain tokens (tokens) (one char size or bigger)
-std::vector<std::string> extract_tok_XL(std::string &text, const std::string *tokens, int num_tokens, bool sort_tokens);
+void extract_tok_XL(std::vector<std::string> &result, const std::string &text, std::string *tokens, unsigned long num_tokens, bool sort_tokens);
 
 // Given a string, extract all the substrings that exist between certain token (one char size or bigger)
-std::vector<std::string> extract_tok_X(std::string &text, const std::string *tokens);
+void extract_tok_X(std::vector<std::string> &result, const std::string &text, const std::string &token);
 
 // Given a string, extract all the substrings that exist between certain token (one char size)
-std::vector<std::string> extract_tok(std::string &text, char token);
+void extract_tok(std::vector<std::string> &result, const std::string &text, char token);
 
 
 // Extract all the data from a file to a string
-std::string extract_file(std::string &text);
+std::string extract_file(std::string &path, std::string &data);
 
 // Extract all the data from a file to a vector<string>, where each string is a line (\n)
-std::string extract_file_lines(std::string &text);
+std::string extract_file_lines(std::string &path, std::vector<std::string> &data);
 
 
 // Definitions ----------------------------------------------------------------
 
 bool is_bigger(const std::string &a, const std::string &b) { return a.size() > b.size(); }
 
-struct {
-    bool operator()(const std::string a, const std::string b) { return a.size() > b.size(); }
-} customMore;
+struct { bool operator()(const std::string a, const std::string b) { return a.size() > b.size(); } } customBigger;
 
-std::vector<std::string> extract_tok_XL(std::string &text, std::string *tokens, int num_tokens, bool sort_tokens = false)
+void extract_tok_XL(std::vector<std::string> &result, const std::string &text, std::string *tokens, unsigned long num_tokens, bool sort_tokens = false)
 {
     // The tokens list should be ordered in descending order (for checking firt the longer tokens and avoid mistakes between similar tokens)
     if(sort_tokens)     // 3 ways of sorting
     {
         //std::sort(tokensX, tokensX + num_tokens, is_bigger);
-        //std::sort(tokensX, tokensX + num_tokens, customMore);
+        //std::sort(tokensX, tokensX + num_tokens, customBigger);
         std::sort(tokens, tokens + num_tokens, [](const std::string a, const std::string b) { return a.size() > b.size(); });
     }
 
-    std::vector<std::string> substrings;
     std::string found_str;
     int first_pos = 0;
 
-    for(int i = 0; i < text.size(); ++i)                    // For each text character
+    for(size_t i = 0; i < text.size(); ++i)                 // For each text character
     {
         for(size_t j = 0; j < num_tokens; ++j)              // For each token
         {
@@ -68,7 +65,7 @@ std::vector<std::string> extract_tok_XL(std::string &text, std::string *tokens, 
             if( tokens[j] == text.substr(i, tokens[j].size()) )
             {
                 found_str = text.substr(first_pos, i - first_pos);
-                if(found_str.size() > 0) substrings.push_back(found_str);
+                if(found_str.size() > 0) result.push_back(found_str);
                 first_pos = i + tokens[j].size();
                 i += (tokens[j].size() - 1);
                 break;
@@ -77,72 +74,56 @@ std::vector<std::string> extract_tok_XL(std::string &text, std::string *tokens, 
     }
 
     // Check last string (when the tokens are larger than the text remaining)
-    if((text.size() - first_pos) > 0) substrings.push_back(text.substr(first_pos, text.size()));
-
-    return substrings;
+    if((text.size() - first_pos) > 0) result.push_back(text.substr(first_pos, text.size()));
 }
 
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-std::vector<std::string> extract_tok_X(std::string &text, const std::string *tokens)
+void extract_tok_X(std::vector<std::string> &result, const std::string &text, const std::string &token)
 {
-    std::vector<std::string> substrings;
-    /*
     std::string found_str;
     int first_pos = 0;
 
-    for(int i = 0; i < text.size(); ++i)                            // For each text character
+    for(size_t i = 0; i < text.size(); ++i)
     {
-        for(size_t j = 0; j < num_tokens; ++j)                      // For each token
-        {
-            // Check end of text
-            if(tokens[j].size() > text.size() - i) continue;
+        if(token.size() > text.size() - i) break;
 
-            // We have a token identification
-            if( tokens[j] == text.substr(i, tokens[j].size()) )
-            {
-                found_str = text.substr(first_pos, i - first_pos);
-                if(found_str.size() > 0) substrings.push_back(found_str);
-                first_pos = i + tokens[j].size();
-                i += (tokens[j].size() - 1);
-                break;
-            }
+        if( token == text.substr(i, token.size()) )
+        {
+            found_str = text.substr(first_pos, i - first_pos);
+            if(found_str.size() > 0) result.push_back(found_str);
+            first_pos = i + token.size();
+            i += (token.size() - 1);
+            continue;
         }
     }
 
-    // Check last string (when the tokens are larger than the text remaining)
-    if((text.size() - first_pos) > 0) substrings.push_back(text.substr(first_pos, text.size()));
-*/
-    return substrings;
+    if((text.size() - first_pos) > 0) result.push_back(text.substr(first_pos, text.size()));
 }
 
-std::vector<std::string> extract_tok(std::string &text, char token)
+void extract_tok(std::vector<std::string> &result, const std::string &text, char token)
 {
-    std::vector<std::string> substrings;
     std::string found_str;
     int first_pos = 0;
 
-    for(int i = 0; i < text.size(); ++i)
+    for(size_t i = 0; i < text.size(); ++i)
     {
         if( text[i] == token )
         {
             found_str = text.substr(first_pos, i - first_pos);
-            if(found_str.size() > 0) substrings.push_back(found_str);
+            if(found_str.size() > 0) result.push_back(found_str);
             first_pos = i + 1;
             continue;
         }
     }
 
-    if((text.size() - first_pos) > 0) substrings.push_back(text.substr(first_pos, text.size()));
-
-    return substrings;
+    if((text.size() - first_pos) > 0) result.push_back(text.substr(first_pos, text.size()));
 }
 
-std::string extract_file(std::string &text)
+std::string extract_file(std::string &path, std::string &data)
 {
 
 }
 
-std::string extract_file_lines(std::string &text)
+std::string extract_file_lines(std::string &path, std::vector<std::string> &data)
 {
 
 }
