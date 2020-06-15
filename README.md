@@ -1,26 +1,22 @@
-# IO-functions
+# iolib
 
-Compilation of I/O functions that may be useful in different circumstances.
+Simple library with useful functions for I/O operations and parsing.
 
-<< test.cpp, myClass.h >>
+- Parsing functions:
 
-test.cpp contains a series of functions with different IO implementations. Any of them can be called from main() by uncommenting the corresponding function call. They are:
-- Output functions:
+// Given a string (text), extract all the substrings that exist between certain tokens (tokens) (one char size or bigger)
+std::vector<std::string> extract_tok_XL(std::string &text, const std::string *tokens, int num_tokens, bool sort_tokens);
 
-void stringToFile():    Pass a string to file
+// Given a string, extract all the substrings that exist between certain token (one char size or bigger)
+std::vector<std::string> extract_tok_X(std::string &text, const std::string *tokens);
 
-void arithmToFile1():   Pass integers to file. Pass ints to a stringstream object and it to the file.
+// Given a string, extract all the substrings that exist between certain token (one char size)
+std::vector<std::string> extract_tok(std::string &text, char token);
 
-void arithmToFile2():   Pass integers to file. Convert ints to std::string, store them in a std::string and pass it to file.
+- I/O functions:
 
-- Input functions:
+// Extract all the data from a file to a string
+std::string extract_file(std::string &text);
 
-void getStrings():      Enter a single word or many words from standard input.
-
-void getWholeFile():    Get all data that is in a file using rdbuf() and stringstream.
-
-- More:
-
-void op_overloading():  Custom operator>> and operator<< functions (operator overloading) to support stream input/output for custom classes. 
-
-void manipulators():    Use of different manipulators from "iostream" and "iomanip" libraries.
+// Extract all the data from a file to a vector<string>, where each string is a line (\n)
+std::string extract_file_lines(std::string &text);
