@@ -1,8 +1,6 @@
 
 #include "iolib.hpp"
 
-#include <iostream>
-
 void test_extract_tok_XL();
 void test_extract_tok_X();
 void test_extract_tok();
@@ -68,12 +66,3 @@ void test_extract_file_lines()
 
     for(int i = 0; i < fileLines.size(); ++i) std::cout << fileLines[i] << std::endl;
 }
-
-
-
-
-
-
-
-
-
