@@ -19,4 +19,8 @@ std::vector<std::string> extract_tok(std::string &text, char token);
 std::string extract_file(std::string &text);
 
 // Extract all the data from a file to a vector<string>, where each string is a line (\n)
-std::string extract_file_lines(std::string &text);
+std::string extract_file_lines(std::string &text);ç
+
+Links:
+
+- [**Input/Output**](https://sciencesoftcode.wordpress.com/2018/09/06/input-output/)
