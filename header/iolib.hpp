@@ -8,13 +8,13 @@
 #define IOLIB_HPP
 
 #include <iostream>
-//#include <fstream>
 #include <string>
-//#include <sstream>
 #include <vector>
-//#include <iterator>
 #include <algorithm>
+//#include <iterator>
 //#include <array>
+#include <fstream>
+#include <sstream>
 
 // Declarations ---------------------------------------------------------------
 
@@ -29,10 +29,10 @@ void extract_tok(std::vector<std::string> &result, const std::string &text, char
 
 
 // Extract all the data from a file to a string
-std::string extract_file(std::string &path, std::string &data);
+void extract_file(std::string &result, std::string &path);
 
 // Extract all the data from a file to a vector<string>, where each string is a line (\n)
-std::string extract_file_lines(std::string &path, std::vector<std::string> &data);
+void extract_file_lines(std::vector<std::string> &result, std::string &path);
 
 
 // Definitions ----------------------------------------------------------------
@@ -118,14 +118,33 @@ void extract_tok(std::vector<std::string> &result, const std::string &text, char
     if((text.size() - first_pos) > 0) result.push_back(text.substr(first_pos, text.size()));
 }
 
-std::string extract_file(std::string &path, std::string &data)
+void extract_file(std::string &result, std::string &path)
 {
+    std::ifstream ifile(path);
 
+    if(ifile.is_open())
+    {
+        std::stringstream sstr;
+        sstr << ifile.rdbuf();
+        result = sstr.str();
+        ifile.close();
+    }
+    else std::cout << "Cannot open file " << path << std::endl;
 }
 
-std::string extract_file_lines(std::string &path, std::vector<std::string> &data)
+void extract_file_lines(std::vector<std::string> &result, std::string &path)
 {
+    std::ifstream ifile(path);
 
+    if(ifile.is_open())
+    {
+        std::string line;
+        while(std::getline(ifile, line))
+            result.push_back(line);
+
+        ifile.close();
+    }
+    else std::cout << "Cannot open file " << path << std::endl;
 }
 
 

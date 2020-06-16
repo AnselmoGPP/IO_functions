@@ -6,6 +6,8 @@
 void test_extract_tok_XL();
 void test_extract_tok_X();
 void test_extract_tok();
+void test_extract_file();
+void test_extract_file_lines();
 
 int main()
 {
@@ -13,8 +15,8 @@ int main()
     test_extract_tok_X();
     test_extract_tok();
 
-
-
+    test_extract_file();
+    test_extract_file_lines();
 }
 
 void test_extract_tok_XL()
@@ -49,7 +51,23 @@ void test_extract_tok()
     std::cout << std::endl;
 }
 
+void test_extract_file()
+{
+    std::string file;
+    std::string path = "..//files//testing.txt";
+    extract_file(file, path);
 
+    std::cout << file;
+}
+
+void test_extract_file_lines()
+{
+    std::vector<std::string> fileLines(0);
+    std::string path = "..//files//testing.txt";
+    extract_file_lines(fileLines, path);
+
+    for(int i = 0; i < fileLines.size(); ++i) std::cout << fileLines[i] << std::endl;
+}
 
 
 
