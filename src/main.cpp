@@ -4,6 +4,7 @@
 void test_extract_tok_XL();
 void test_extract_tok_X();
 void test_extract_tok();
+void test_extract_digits();
 void test_extract_file();
 void test_extract_file_lines();
 
@@ -12,6 +13,7 @@ int main()
     test_extract_tok_XL();
     test_extract_tok_X();
     test_extract_tok();
+    test_extract_digits();
 
     test_extract_file();
     test_extract_file_lines();
@@ -46,6 +48,16 @@ void test_extract_tok()
 
     extract_tok(result, str, ',');
     for(size_t i = 0; i < result.size(); ++i) std::cout << result[i] << ' ';
+    std::cout << std::endl;
+}
+
+void test_extract_digits()
+{
+    unsigned int n = 109573200;
+    std::vector<unsigned int> digits = extract_digits(n);
+
+    std::cout << n << ":  ";
+    for(int i = 0; i < digits.size(); ++i) std::cout << digits[i] << "  ";
     std::cout << std::endl;
 }
 

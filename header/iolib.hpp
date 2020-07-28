@@ -27,6 +27,8 @@ void extract_tok_X(std::vector<std::string> &result, const std::string &text, co
 // Given a string, extract all the substrings that exist between certain token (one char size)
 void extract_tok(std::vector<std::string> &result, const std::string &text, char token);
 
+// Given a number, extract its digits and return them in a vector
+std::vector<unsigned int> extract_digits(unsigned int n);
 
 // Extract all the data from a file to a string
 void extract_file(std::string &result, std::string &path);
@@ -118,6 +120,20 @@ void extract_tok(std::vector<std::string> &result, const std::string &text, char
     if((text.size() - first_pos) > 0) result.push_back(text.substr(first_pos, text.size()));
 }
 
+std::vector<unsigned int> extract_digits(unsigned int n)
+{
+    std::vector<unsigned int> result;
+
+    do
+    {
+        result.push_back(n % 10);
+        n /= 10;
+    }
+    while (n > 0);
+
+    return result;
+}
+
 void extract_file(std::string &result, std::string &path)
 {
     std::ifstream ifile(path);
@@ -147,134 +163,5 @@ void extract_file_lines(std::vector<std::string> &result, std::string &path)
     else std::cout << "Cannot open file " << path << std::endl;
 }
 
-
-
-
-
-
-
-
-// Check whether one point (x,y) is inside a box (bx, by, bx2, by2)
-bool is_inside(float x, float y, float bx, float by, float bx2, float by2)
-{
-    if( x > bx  &&  x < bx2  &&  y > by  &&  y < by2 ) return true;
-    else return false;
-}
-
-/*
-int main1()
-{
-	std::ifstream ROI_file("/opt/samples/04.ROAD/01.ADAS/04.RAW/metrics_detector/metrics_clips_Econsystem_enero2020/Otros/ROIs.txt");
-	std::ifstream ifile("/opt/samples/04.ROAD/01.ADAS/04.RAW/metrics_detector/metrics_clips_Econsystem_enero2020/labels_full.json");
-	std::ofstream ofile("/opt/samples/04.ROAD/01.ADAS/04.RAW/metrics_detector/metrics_clips_Econsystem_enero2020/labels_ROI.json");
-
-	if(ROI_file.is_open() && ifile.is_open() && ofile.is_open())
-	{
-        // Get the extracted ROI ----------------------------------
-        std::vector<std::vector<int>> ROIs;
-        std::string tokens[3] = { " ", "\n", "," };
-        std::vector<std::string> temp;
-
-        std::string line;
-        while(std::getline(ROI_file, line))
-        {
-            temp = extract_between_tokens(line, tokens, 2);
-            ROIs.push_back( std::vector<int>{stoi(temp[0]), stoi(temp[1]), stoi(temp[2]), stoi(temp[3])} );
-        }
-        ROI_file.close();
-        //std::cout << ROIs.size() << std::endl;
-        //for(int i = 0; i < 10; ++i) std::cout << ROIs[i][0] << " " << ROIs[i][1] << " " << ROIs[i][2] << " " << ROIs[i][3] << std::endl;
-
-        // Labels/Predictions -------------------------------------
-        int roiIndex = 0;
-        float x, y, x2, y2;                         // ROI coordinates
-        float bx, by, bx2, by2;                     // Bounding box coordinates
-        bool corners_inside_ROI[4] = {0,0,0,0};     // up left, up right, low right, low left
-        std::string str_to_output;
-
-        while(std::getline(ifile, line))
-        {
-            bool is_labels = true;      // <<<<<<<<<<<<<<
-
-            if ((roiIndex + 1) > ROIs.size()) break;
-            std::cout << "Progress: " << roiIndex + 1 << " / " << ROIs.size() << '\r';
-
-            std::string regist;
-            bool box_outside = false;
-
-            regist.append(line + '\n');
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-
-            if(is_labels)
-            {
-                if (std::getline(ifile, line)) regist.append(line + '\n');
-                if (std::getline(ifile, line)) regist.append(line + '\n');
-                if (std::getline(ifile, line)) regist.append(line + '\n');
-            }
-
-            //if(std::getline(ifile, line)) std::cout << "XXX: " << std::stof(extract_between_tokens(line, tokens, 3)[0]) << std::endl;
-
-            if(std::getline(ifile, line)) x  = std::stof(extract_between_tokens(line, tokens, 3)[0]);
-            if(std::getline(ifile, line)) y  = std::stof(extract_between_tokens(line, tokens, 3)[0]);
-            if(std::getline(ifile, line)) x2 = std::stof(extract_between_tokens(line, tokens, 3)[0]);
-            if(std::getline(ifile, line)) y2 = std::stof(extract_between_tokens(line, tokens, 3)[0]);
-
-            // Check box position with respect to the ROI
-            bx  = ROIs[roiIndex][0];
-            by  = ROIs[roiIndex][1];
-            bx2 = ROIs[roiIndex][0]+ROIs[roiIndex][2];
-            by2 = ROIs[roiIndex][1]+ROIs[roiIndex][3];
-
-            corners_inside_ROI[0] = is_inside(bx,  by,  x, y, x2, y2);
-            corners_inside_ROI[1] = is_inside(bx2, by,  x, y, x2, y2);
-            corners_inside_ROI[2] = is_inside(bx2, by2, x, y, x2, y2);
-            corners_inside_ROI[3] = is_inside(bx,  by2, x, y, x2, y2);
-
-            if(corners_inside_ROI[0] && corners_inside_ROI[1] && corners_inside_ROI[2] && corners_inside_ROI[3]) { }
-            else if(corners_inside_ROI[0] && corners_inside_ROI[1]) { by2 = y2; }
-            else if(corners_inside_ROI[2] && corners_inside_ROI[3]) { by  = y;  }
-            else if(corners_inside_ROI[1] && corners_inside_ROI[2]) { bx  = x;  }
-            else if(corners_inside_ROI[0] && corners_inside_ROI[3]) { bx2 = x2; }
-            else if(corners_inside_ROI[0]) { bx2 = x2;  by2 = y2; }
-            else if(corners_inside_ROI[1]) { bx  = x;   by2 = y2; }
-            else if(corners_inside_ROI[2]) { bx  = x;   by  = y;  }
-            else if(corners_inside_ROI[3]) { bx2 = x2;  by  = y;  }
-            else if(bx < x  &&  by < y   &&  bx2 > x   &&  bx2 < x2  &&  by2 > y2) { bx = x;  by  = y;   by2 = y2; }
-            else if(bx > x  &&  bx < x2  &&  by < y    &&  bx2 > x2  &&  by2 > y2) { by = y;  bx2 = x2;  by2 = y2; }
-            else if(bx < x  &&  by < y   &&  bx2 > x2  &&  by2 > y   &&  by2 < y2) { bx = x;  by  = y;   bx2 = x2; }
-            else if(bx < x  &&  by > y   &&  by < y2   &&  bx2 > x2  &&  by2 > y2) { bx = x;  bx2 = x2;  by2 = y2; }
-            else if(bx < x  &&  by < y   &&  bx2 > x2  &&  by2 > y2) { bx = x;  by = y;  bx2 = x2;  by2 = y2; }
-            else box_outside = true;
-
-            std::string space;
-            if(is_labels) space = "            ";
-            else space = "        ";
-
-            // Uncomment for labels
-            std::stringstream sstream;
-            sstream << space << bx  << ",\n"
-                    << space << by  << ",\n"
-                    << space << bx2 << ",\n"
-                    << space << by2 << "\n";
-            regist.append(sstream.str());
-
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-            if(std::getline(ifile, line)) regist.append(line + '\n');
-
-            if(!box_outside) str_to_output.append(regist);
-            roiIndex++;
-        }
-        ifile.close();
-        std::cout << std::endl;
-
-        ofile << str_to_output;
-        ofile.close();
-	}
-    else std::cout << "A file could not be opened" << std::endl;
-}
-*/
 #endif
 
