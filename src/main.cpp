@@ -19,7 +19,7 @@ int main()
     test_extract_file();
     test_extract_file_lines();
     
-    
+    test_getCurrentDirectory(); 
 }
 
 void test_extract_tok_XL()
