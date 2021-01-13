@@ -19,6 +19,11 @@ std::vector<std::string> extract_tok_X(std::string &text, const std::string *tok
 std::vector<std::string> extract_tok(std::string &text, char token);
 ```
 
+```c++
+// Given a number, extract its digits and return them in a vector
+std::vector<unsigned int> extract_digits(unsigned int n);
+```
+
 - I/O functions:
 
 ```c++
@@ -29,6 +34,11 @@ std::string extract_file(std::string &text);
 ```c++
 // Extract all the data from a file to a vector<string>, where each string is a line (\n)
 std::string extract_file_lines(std::string &text);
+```
+
+```c++
+// Returns a string containing the name of the current directory
+std::string getCurrentDirectory();
 ```
 
 Links:
