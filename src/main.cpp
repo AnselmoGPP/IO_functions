@@ -7,6 +7,7 @@ void test_extract_tok();
 void test_extract_digits();
 void test_extract_file();
 void test_extract_file_lines();
+void test_getCurrentDirectory();
 
 int main()
 {
@@ -17,6 +18,8 @@ int main()
 
     test_extract_file();
     test_extract_file_lines();
+    
+    
 }
 
 void test_extract_tok_XL()
@@ -77,4 +80,9 @@ void test_extract_file_lines()
     extract_file_lines(fileLines, path);
 
     for(int i = 0; i < fileLines.size(); ++i) std::cout << fileLines[i] << std::endl;
+}
+
+void test_getCurrentDirectory()
+{
+    std::cout << '[' << getCurrentDirectory() << ']' << std::endl;
 }
