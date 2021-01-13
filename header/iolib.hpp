@@ -163,5 +163,23 @@ void extract_file_lines(std::vector<std::string> &result, std::string &path)
     else std::cout << "Cannot open file " << path << std::endl;
 }
 
+std::string getCurrentDirectory(){
+
+	std::string dir = "";
+
+    #if defined(_WIN64) || (_WIN32)
+	dir = system("cd");
+    
+    #elif __unix__
+	    dir = system("pwd");
+	    std::string test = dir.substr(0, dir.size() - 10);
+	    dir = test;
+	    //std::cout << dir.substr(0, dir.size() - 10) << std::endl;
+	    //std::cout << dir.size() << std::endl;
+    #endif
+
+	return dir;
+}
+
 #endif
 
