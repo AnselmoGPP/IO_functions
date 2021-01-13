@@ -36,6 +36,9 @@ void extract_file(std::string &result, std::string &path);
 // Extract all the data from a file to a vector<string>, where each string is a line (\n)
 void extract_file_lines(std::vector<std::string> &result, std::string &path);
 
+// Returns a string containing the name of the current directory
+std::string getCurrentDirectory();
+
 
 // Definitions ----------------------------------------------------------------
 
